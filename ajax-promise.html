@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8'>
+  <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+  <title>Promises</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+
+<body>
+
+  <div id="div1">
+    <h2>Promises</h2>
+  </div>
+
+  <input />
+  <button id="console">Console Log</button>
+
+  <hr>
+  <button id="button">Get Content</button>
+  <div>
+    <img id="cat" src="" width="350" />
+    <div id="error"></div>
+  </div>
+
+  <script>
+    // console.log(Promise.prototype);
+    // Promise {
+    //   then() {} // se ejecuta cuando se cumplio la promesa
+    //   catch() {} // cuando la promesa fue rejected
+    //   finally() {}  // siempre... despues de then o catch
+    // }
+
+    
+    const promiseTimer = (boolean) => new Promise((resolve, reject) => {
+      const decision = boolean => {
+        if (boolean) {
+          resolve('Resuelto!');
+          return;
+        }
+        reject('Rechazado!');
+      };
+      setTimeout(() => decision(boolean), 2000);
+      }
+    );
+
+
+    
+    const promiseCat = () => new Promise((resolve, reject, onFinally) => {
+      $.ajax({
+        // url: "https://aws.random.cat/meow",
+        url: "favicon.ico",
+        method: "GET",
+        dataType: "json",
+        beforeSend: function () {
+          $("#button").prop("disabled", true).text("Loading...");
+        },
+        success: resolve,
+        error: reject,
+        complete: onFinally
+      });
+    });
+    
+    $(document).ready(function () {
+      
+      // Timer
+      $("#console").click(() => {
+        const value = !!$("input").prop('value');
+        console.log(`value: ${value}`);
+        promiseTimer(value)
+          .then((response) => {
+            console.log('Success!');
+            console.log(response);
+          })
+          .catch((error) => {
+            console.error('Ups!')
+            console.error(error)
+          })
+          .finally((param) => {
+            console.log('Always!');
+            console.log(param);
+          });
+      });
+      
+      // Cat
+      $("#button").click(function () {
+        promiseCat()
+          .then(response => {
+            console.log(response);
+            $("#cat").attr("src", response.file);
+          })
+          .catch(error => {
+            console.error(error);
+            $("#error").html(error.statusText);
+          })
+          .finally(param => {
+            $("button").prop("disabled", false).text("Get Content Finally ");
+          })
+      });
+    });
+  </script>
+</body>
+</html>

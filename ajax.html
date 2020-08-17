@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>AJAX</title>
+  </head>
+
+<body>
+
+  <div id="demo">
+    <h1>The XMLHttpRequest Object</h1>
+    <button id="button" type="button" onclick="showMeow()">Gatito</button>
+    <div>
+      <img id="cat" src="" width="350"/>
+      <div id="error"></div>
+    </div>
+  </div>
+
+  <script>
+    function runCallback() {
+      console.log(this.readyState);
+      
+      if (this.readyState < 4) { // estoy en el medio del request
+        document.getElementById("button").setAttribute("disabled", "disabled");
+      } else { // state === 4, termino el request
+        document.getElementById("button").removeAttribute("disabled");
+      }
+
+      if (this.readyState == 4 && this.status >= 200 && this.status < 300) {
+        console.log(this);
+        const srcData = JSON.parse(this.responseText).file;
+        document.getElementById("cat").setAttribute("src", srcData);
+      } else if (this.readyState == 4 && this.status >= 300) {
+        console.log(this);
+        document.getElementById("error").innerHTML = this.statusText;
+      }
+    }
+
+    function showMeow() {
+      const xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = runCallback;
+      xhttp.open("GET", "https://aws.random.cat/meow", true);
+      // xhttp.open("GET", "favicon.ico", true);
+      xhttp.send();
+    }
+
+
+    
+  </script>
+
+</body>
+
+</html>
